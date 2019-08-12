@@ -18,9 +18,8 @@ apply plugin: 'com.android.library'
 
 android {
   compileSdkVersion rootProject.ext.compileSdkVersion
-  buildToolsVersion rootProject.ext.buildToolsVersion
 
-  defaultConfig {
+    defaultConfig {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode rootProject.ext.libVersionCode
@@ -34,10 +33,11 @@ android {
     }
   }
 }
-
+repositories {
+  maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases/' }
+}
 dependencies {
-  testImplementation 'junit:junit:4.12'
-  // Add Vision API
+  implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.2'
   implementation "com.google.android.gms:play-services-vision:$rootProject.ext.playServicesVersion"
 }
 

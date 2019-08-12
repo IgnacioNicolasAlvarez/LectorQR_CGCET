@@ -18,6 +18,5 @@ package github.nisrulz.projectqreader;
 
 interface RPResultListener {
   void onPermissionGranted();
-
   void onPermissionDenied();
 }

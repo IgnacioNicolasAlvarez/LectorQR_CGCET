@@ -15,8 +15,17 @@
   -->
 
 <resources>
-  <string name="app_name">QREader</string>
-  <string name="intro_text">Point the camera view to a QR Code to read the information</string>
-  <string name="restart_activity">Restart Activity</string>
+  <string name="app_name">Lector QR CGCET</string>
+  <string name="intro_text">Apunta la camara hacia el codigo QR para capturar</string>
+  <string name="restart_activity">Refrescar Capturador</string>
   <string name="stop_start_qreader">Stop QREader</string>
+    <string name="title_activity_login">Login QR CGCET</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>

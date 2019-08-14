@@ -18,17 +18,15 @@ package github.nisrulz.projectqreader;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-
-import org.ksoap2.serialization.SoapObject;
-
+import android.widget.RelativeLayout;
+import org.ksoap2.serialization.SoapPrimitive;
 import github.nisrulz.qreader.ConexionWebService;
 import github.nisrulz.qreader.QRDataListener;
 import github.nisrulz.qreader.QREader;
@@ -36,8 +34,7 @@ import github.nisrulz.qreader.QREader;
 public class MainActivity extends AppCompatActivity {
 
     private static final String cameraPerm = Manifest.permission.CAMERA;
-
-    private TextView text;
+    private RelativeLayout currentLayout;
     private SurfaceView mySurfaceView;
     private QREader qrEader;
     boolean hasCameraPermission = false;
@@ -46,29 +43,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         hasCameraPermission = RuntimePermissionUtil.checkPermissonGranted(this, cameraPerm);
+        currentLayout = findViewById(R.id.activity_main);
 
-        text = findViewById(R.id.code_info);
-
-        final Button stateBtn = findViewById(R.id.btn_start_stop);
-        stateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (qrEader.isCameraRunning()) {
-                    stateBtn.setText("Start QREader");
-                    qrEader.stop();
-                } else {
-                    stateBtn.setText("Stop QREader");
-                    qrEader.start();
-                }
-            }
-        });
-
-        stateBtn.setVisibility(View.VISIBLE);
         Button restartbtn = findViewById(R.id.btn_restart_activity);
-
         restartbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,22 +75,60 @@ public class MainActivity extends AppCompatActivity {
 
     void setupQREader() {
 
-        qrEader = new QREader.Builder(this, mySurfaceView, new QRDataListener() {
-            @Override
-            public void onDetected(final String data) {
-                Log.d("QREader", "Value : " + data);
-                text.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        text.setText(data);
-                    }
-                });
-            }
-        }).facing(QREader.BACK_CAM)
-                .enableAutofocus(true)
-                .height(mySurfaceView.getHeight())
-                .width(mySurfaceView.getWidth())
-                .build();
+        final String[] auxStrings = new String[1];
+
+        try
+        {
+            qrEader = new QREader.Builder(this, mySurfaceView, new QRDataListener() {
+                @Override
+                public void onDetected(final String lecturaQR) {
+
+                    new Thread(new Runnable() {
+                        public void run() {
+
+                            qrEader.stop();
+                            try
+                            {
+                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR);
+                                auxStrings[0] = s.getValue().toString();
+
+                                if(auxStrings[0].equals("S")) {
+                                    currentLayout.setBackgroundColor(Color.GREEN);
+                                }
+                                else {
+                                    currentLayout.setBackgroundColor(Color.RED);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                currentLayout.setBackgroundColor(Color.RED);
+                                qrEader.releaseAndCleanup();
+                                ex.printStackTrace();
+                            }
+                            finally {
+                                qrEader.start();
+                            }
+
+                        }
+
+                    }).start();
+                }
+            }).facing(QREader.BACK_CAM)
+                    .enableAutofocus(true)
+                    .height(mySurfaceView.getHeight())
+                    .width(mySurfaceView.getWidth())
+                    .build();
+        }
+        catch (Exception ex)
+        {
+            currentLayout.setBackgroundColor(Color.RED);
+            qrEader.releaseAndCleanup();
+            ex.printStackTrace();
+        }
+        finally {
+            qrEader.start();
+        }
+
     }
 
     @Override

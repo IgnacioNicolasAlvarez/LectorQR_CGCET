@@ -17,7 +17,9 @@
 package github.nisrulz.projectqreader;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,7 +28,9 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+
 import org.ksoap2.serialization.SoapPrimitive;
+
 import github.nisrulz.qreader.ConexionWebService;
 import github.nisrulz.qreader.QRDataListener;
 import github.nisrulz.qreader.QREader;
@@ -77,8 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         final String[] auxStrings = new String[1];
 
-        try
-        {
+        try {
             qrEader = new QREader.Builder(this, mySurfaceView, new QRDataListener() {
                 @Override
                 public void onDetected(final String lecturaQR) {
@@ -87,25 +90,26 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
 
                             qrEader.stop();
-                            try
-                            {
-                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR);
+                            try {
+                                SharedPreferences sesionUsuario = getSharedPreferences("PreferenciasUsuario", Context.MODE_PRIVATE);
+                                final String turno = sesionUsuario.getString("turno", "");
+                                final String apynom = sesionUsuario.getString("apynom", "");
+                                final String fecha = sesionUsuario.getString("fecha", "");
+
+
+                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha);
                                 auxStrings[0] = s.getValue().toString();
 
-                                if(auxStrings[0].equals("S")) {
+                                if (auxStrings[0].equals("S")) {
                                     currentLayout.setBackgroundColor(Color.GREEN);
-                                }
-                                else {
+                                } else {
                                     currentLayout.setBackgroundColor(Color.RED);
                                 }
-                            }
-                            catch (Exception ex)
-                            {
+                            } catch (Exception ex) {
                                 currentLayout.setBackgroundColor(Color.RED);
                                 qrEader.releaseAndCleanup();
                                 ex.printStackTrace();
-                            }
-                            finally {
+                            } finally {
                                 qrEader.start();
                             }
 
@@ -118,14 +122,11 @@ public class MainActivity extends AppCompatActivity {
                     .height(mySurfaceView.getHeight())
                     .width(mySurfaceView.getWidth())
                     .build();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             currentLayout.setBackgroundColor(Color.RED);
             qrEader.releaseAndCleanup();
             ex.printStackTrace();
-        }
-        finally {
+        } finally {
             qrEader.start();
         }
 

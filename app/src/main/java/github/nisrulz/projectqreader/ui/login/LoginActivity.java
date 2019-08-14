@@ -1,127 +1,122 @@
 package github.nisrulz.projectqreader.ui.login;
 
-import android.app.Activity;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import org.ksoap2.serialization.SoapObject;
+
+import github.nisrulz.projectqreader.MainActivity;
 import github.nisrulz.projectqreader.R;
-import github.nisrulz.projectqreader.ui.login.LoginViewModel;
-import github.nisrulz.projectqreader.ui.login.LoginViewModelFactory;
+import github.nisrulz.qreader.ConexionWebService;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private LoginViewModel loginViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
+        final EditText dateEditText = findViewById(R.id.date);
         final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        final ToggleButton toogleTurno = findViewById(R.id.selectorTurno);
+        final String[] textoToogle = new String[1];
+        final String[] arrayAcceso = new String[2];
 
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+        toogleTurno.setChecked(false);
+        toogleTurno.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    textoToogle[0] = "M";
+                } else {
+                    textoToogle[0] = "T";
                 }
             }
         });
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
-
-                //Complete and destroy login activity once successful
-                finish();
-            }
-        });
-
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-        };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                }
-                return false;
-            }
-        });
-
+        loginButton.setEnabled(true);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+
+                final String user = usernameEditText.getText().toString();
+                final String pass = passwordEditText.getText().toString();
+                final String turno = textoToogle[0];
+                final String fecha = dateEditText.getText().toString();
+
+                if (user == null || pass == null || turno == null || fecha == null) {
+
+                } else {
+
+                    Thread nt = new Thread() {
+                        @Override
+                        public void run() {
+
+                            try {
+
+                                SoapObject respuestaWS = ConexionWebService.getInstancia().getVerificarContraseña(user, pass);
+                                for (int i = 1; i < respuestaWS.getPropertyCount(); i++) {
+                                    arrayAcceso[0] = respuestaWS.getProperty(0).toString();
+                                    arrayAcceso[1] = respuestaWS.getProperty(1).toString();
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    if (arrayAcceso[0] != null) {
+
+                                        if (arrayAcceso[0].equals("aprobado")) {
+
+                                            SharedPreferences prefs =
+                                                    getSharedPreferences("PreferenciasUsuario", Context.MODE_PRIVATE);
+
+                                            SharedPreferences.Editor sesionUsuario = prefs.edit();
+
+                                            sesionUsuario.putString("turno", turno);
+                                            sesionUsuario.putString("fecha", fecha);
+                                            sesionUsuario.putString("apynom", arrayAcceso[1]);
+                                            sesionUsuario.commit();
+
+                                            cargarLector();
+                                        } else {
+
+                                            Toast.makeText(LoginActivity.this, "Número de DNI, o contraseña erroneas." +
+                                                    " Vuelva a intentarlo.", Toast.LENGTH_LONG).show();
+                                        }
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Ha ocurrido un problema con la red." +
+                                                " Vuelva a intentarlo.", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    nt.start();
+                }
             }
         });
+
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+    public void cargarLector() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
-    }
 }

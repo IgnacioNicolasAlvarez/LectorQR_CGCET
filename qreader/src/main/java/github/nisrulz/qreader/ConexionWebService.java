@@ -50,7 +50,7 @@ public class ConexionWebService
         return respuestaSoap;
     }
 
-    public SoapPrimitive getEscribirAsistencia(String contenidoQR)
+    public SoapPrimitive getEscribirAsistencia(String contenidoQR, String turno, String apynom, String fecha)
     {
 
         String METHOD_NAME = "escribirAsistencia";
@@ -60,6 +60,9 @@ public class ConexionWebService
         {
             SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
             request.addProperty("contenidoQR", contenidoQR);
+            request.addProperty("turno", turno);
+            request.addProperty("apynom", apynom);
+            request.addProperty("fecha", fecha);
 
             SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
             envelope.dotNet = true;

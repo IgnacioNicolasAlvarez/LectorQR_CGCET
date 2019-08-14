@@ -20,12 +20,13 @@
   <string name="restart_activity">Refrescar Capturador</string>
   <string name="stop_start_qreader">Stop QREader</string>
     <string name="title_activity_login">Login QR CGCET</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="prompt_email">Número de Documento</string>
+  <string name="prompt_date">Fecha del Evento</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Ingresar al Lector QR</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="welcome">"Bienvenido !"</string>
+    <string name="invalid_username">Dni Incorrecto</string>
+    <string name="invalid_password">Contraseña Incorrecta</string>
+    <string name="login_failed">"Error en Login"</string>
 </resources>

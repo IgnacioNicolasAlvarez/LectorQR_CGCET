@@ -128,6 +128,8 @@ public class LoginActivity extends AppCompatActivity {
                                             sesionUsuario.putString("apynom", arrayAcceso[1]);
                                             sesionUsuario.putString("turno", listaEvento.get(indicePresionado[0]).getTurno());
                                             sesionUsuario.putString("fecha", listaEvento.get(indicePresionado[0]).getFecha());
+                                            sesionUsuario.putString("codigo", listaEvento.get(indicePresionado[0]).getCodigo());
+                                            sesionUsuario.putString("conCosto", listaEvento.get(indicePresionado[0]).getConCosto());
 
                                             sesionUsuario.commit();
 

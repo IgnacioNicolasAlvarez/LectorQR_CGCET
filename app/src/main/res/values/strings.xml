@@ -15,11 +15,12 @@
   -->
 
 <resources>
-  <string name="app_name">Lector QR CGCET</string>
+  <string name="app_name">Lector de Asistencia CGCET</string>
+
   <string name="intro_text">Apunta la camara hacia el codigo QR para capturar</string>
   <string name="restart_activity">Refrescar Capturador</string>
   <string name="stop_start_qreader">Stop QREader</string>
-    <string name="title_activity_login">Login QR CGCET</string>
+    <string name="title_activity_login">Lector de Asistencia CGCET</string>
     <string name="prompt_email">Número de Documento</string>
   <string name="prompt_date">Fecha del Evento</string>
     <string name="prompt_password">Contraseña</string>

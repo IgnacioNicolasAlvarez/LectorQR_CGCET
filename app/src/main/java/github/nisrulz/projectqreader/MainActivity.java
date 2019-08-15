@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
@@ -95,18 +96,27 @@ public class MainActivity extends AppCompatActivity {
                                 final String turno = sesionUsuario.getString("turno", "");
                                 final String apynom = sesionUsuario.getString("apynom", "");
                                 final String fecha = sesionUsuario.getString("fecha", "");
+                                final String codigo = sesionUsuario.getString("codigo", "");
+                                final String conCosto = sesionUsuario.getString("conCosto", "");
 
-
-                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha);
+                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha, codigo, conCosto);
                                 auxStrings[0] = s.getValue().toString();
 
-                                if (auxStrings[0].equals("S")) {
-                                    currentLayout.setBackgroundColor(Color.GREEN);
-                                } else {
-                                    currentLayout.setBackgroundColor(Color.RED);
+                                switch (auxStrings[0]) {
+                                    case "S":
+                                        currentLayout.setBackgroundColor(Color.GREEN);
+                                        break;
+                                    case "NI":
+                                        currentLayout.setBackgroundColor(Color.CYAN);
+                                        break;
+                                    default:
+                                        currentLayout.setBackgroundColor(Color.RED);
+                                        break;
+
                                 }
+
                             } catch (Exception ex) {
-                                currentLayout.setBackgroundColor(Color.RED);
+                                currentLayout.setBackgroundColor(Color.YELLOW);
                                 qrEader.releaseAndCleanup();
                                 ex.printStackTrace();
                             } finally {

@@ -50,6 +50,32 @@ public class ConexionWebService
         return respuestaSoap;
     }
 
+    public SoapObject getEventosHoy()
+    {
+
+        String METHOD_NAME = "ListaEventosHoy";
+        String SOAP_ACTION = NAMESPACE + METHOD_NAME;
+        SoapObject respuestaSoap = null;
+        try
+        {
+            SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+
+            SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+            envelope.dotNet = true;
+
+            envelope.setOutputSoapObject(request);
+            HttpTransportSE transporte = new HttpTransportSE(URL);
+
+            transporte.call(SOAP_ACTION, envelope);
+            respuestaSoap = (SoapObject) envelope.getResponse();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return respuestaSoap;
+    }
+
     public SoapPrimitive getEscribirAsistencia(String contenidoQR, String turno, String apynom, String fecha)
     {
 

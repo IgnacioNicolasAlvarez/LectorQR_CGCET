@@ -3,16 +3,23 @@ package github.nisrulz.projectqreader.ui.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import org.ksoap2.serialization.SoapObject;
+
+import java.util.ArrayList;
 
 import github.nisrulz.projectqreader.MainActivity;
 import github.nisrulz.projectqreader.R;
@@ -27,35 +34,66 @@ public class LoginActivity extends AppCompatActivity {
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
-        final EditText dateEditText = findViewById(R.id.date);
         final Button loginButton = findViewById(R.id.login);
-        final ToggleButton toogleTurno = findViewById(R.id.selectorTurno);
-        final String[] textoToogle = new String[1];
+        final ViewGroup radioGroup = findViewById(R.id.radioB);
+        final LoginActivity x = this;
+        final ArrayList<Evento> listaEvento = new ArrayList<>();
+        final int[] indicePresionado = new int[1];
         final String[] arrayAcceso = new String[2];
 
-        toogleTurno.setChecked(false);
-        toogleTurno.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Thread nt = new Thread() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    textoToogle[0] = "M";
-                } else {
-                    textoToogle[0] = "T";
+            public void run() {
+
+                try {
+                    SoapObject respuestaWS = ConexionWebService.getInstancia().getEventosHoy();
+                    for (int i = 0; i < respuestaWS.getPropertyCount(); i++) {
+
+                        String tema = respuestaWS.getProperty(i).toString().split("=")[1].split(";")[0];
+                        String fecha = respuestaWS.getProperty(i).toString().split("=")[2].split(";")[0];
+                        String turno = respuestaWS.getProperty(i).toString().split("=")[3].split(";")[0];
+                        String codigo = respuestaWS.getProperty(i).toString().split("=")[4].split(";")[0];
+                        String conCosto = respuestaWS.getProperty(i).toString().split("=")[5].split(";")[0];
+
+                        Evento e = new Evento(tema, fecha, turno, codigo, conCosto);
+                        listaEvento.add(e);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                for (final Evento evento : listaEvento) {
+
+                    final RadioButton radioButton = new RadioButton(x);
+                    radioButton.setId(listaEvento.indexOf(evento));
+
+                    radioButton.setText("Evento: " + evento.getCodigo() +
+                            "\nFecha: " + evento.getFecha() +
+                            "\nTurno: " + evento.getTurno());
+
+                    radioButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            indicePresionado[0] = radioButton.getId();
+                            loginButton.setEnabled(true);
+                        }
+                    });
+                    radioGroup.addView(radioButton);
                 }
             }
-        });
+        };
 
-        loginButton.setEnabled(true);
+        nt.start();
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 final String user = usernameEditText.getText().toString();
                 final String pass = passwordEditText.getText().toString();
-                final String turno = textoToogle[0];
-                final String fecha = dateEditText.getText().toString();
 
-                if (user == null || pass == null || turno == null || fecha == null) {
+                if (user == null || pass == null) {
 
                 } else {
 
@@ -87,9 +125,10 @@ public class LoginActivity extends AppCompatActivity {
 
                                             SharedPreferences.Editor sesionUsuario = prefs.edit();
 
-                                            sesionUsuario.putString("turno", turno);
-                                            sesionUsuario.putString("fecha", fecha);
                                             sesionUsuario.putString("apynom", arrayAcceso[1]);
+                                            sesionUsuario.putString("turno", listaEvento.get(indicePresionado[0]).getTurno());
+                                            sesionUsuario.putString("fecha", listaEvento.get(indicePresionado[0]).getFecha());
+
                                             sesionUsuario.commit();
 
                                             cargarLector();

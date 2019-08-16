@@ -24,7 +24,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
@@ -108,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
                                         break;
                                     case "NI":
                                         currentLayout.setBackgroundColor(Color.CYAN);
+                                        break;
+                                    case "NP":
+                                        currentLayout.setBackgroundColor(Color.MAGENTA);
+                                        break;
+                                    case "YI":
+                                        currentLayout.setBackgroundColor(Color.WHITE);
                                         break;
                                     default:
                                         currentLayout.setBackgroundColor(Color.RED);

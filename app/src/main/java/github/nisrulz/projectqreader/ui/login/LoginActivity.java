@@ -3,19 +3,14 @@ package github.nisrulz.projectqreader.ui.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import org.ksoap2.serialization.SoapObject;
 
@@ -67,9 +62,9 @@ public class LoginActivity extends AppCompatActivity {
                     final RadioButton radioButton = new RadioButton(x);
                     radioButton.setId(listaEvento.indexOf(evento));
 
-                    radioButton.setText("Evento: " + evento.getCodigo() +
+                    radioButton.setText("Evento: " + evento.getTema() +
                             "\nFecha: " + evento.getFecha() +
-                            "\nTurno: " + evento.getTurno());
+                            "\nTurno: " + evento.getTurno() + "\n");
 
                     radioButton.setOnClickListener(new View.OnClickListener() {
                         @Override

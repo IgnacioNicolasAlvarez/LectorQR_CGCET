@@ -11,12 +11,13 @@ public class Evento {
     public Evento() {
     }
 
-    public Evento(String tema, String fecha, String turno, String codigo, String conCosto) {
+    public Evento(String tema, String fecha, String turno, String codigo, String conCosto ) {
         this.tema = tema;
         this.fecha = fecha;
         this.turno = turno;
         this.codigo = codigo;
         ConCosto = conCosto;
+
     }
 
     public String getTema() {
@@ -58,4 +59,5 @@ public class Evento {
     public void setConCosto(String conCosto) {
         ConCosto = conCosto;
     }
+
 }

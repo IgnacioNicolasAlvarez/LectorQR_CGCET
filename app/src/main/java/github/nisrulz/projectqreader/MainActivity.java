@@ -103,24 +103,30 @@ public class MainActivity extends AppCompatActivity {
 
                                 switch (auxStrings[0]) {
                                     case "S":
+                                        //todo ok
                                         currentLayout.setBackgroundColor(Color.GREEN);
                                         break;
                                     case "NI":
+                                        //no esta inscripto
                                         currentLayout.setBackgroundColor(Color.CYAN);
                                         break;
                                     case "NP":
+                                        //no pago
                                         currentLayout.setBackgroundColor(Color.MAGENTA);
                                         break;
                                     case "YI":
+                                        // ya tiene la asistencia cargada
                                         currentLayout.setBackgroundColor(Color.WHITE);
                                         break;
                                     default:
+                                        // error en la carga de asistencia
                                         currentLayout.setBackgroundColor(Color.RED);
                                         break;
 
                                 }
 
                             } catch (Exception ex) {
+
                                 currentLayout.setBackgroundColor(Color.YELLOW);
                                 qrEader.releaseAndCleanup();
                                 ex.printStackTrace();

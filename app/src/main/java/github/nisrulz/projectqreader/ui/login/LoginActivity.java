@@ -48,9 +48,9 @@ public class LoginActivity extends AppCompatActivity {
                         String fecha = respuestaWS.getProperty(i).toString().split("=")[2].split(";")[0];
                         String turno = respuestaWS.getProperty(i).toString().split("=")[3].split(";")[0];
                         String codigo = respuestaWS.getProperty(i).toString().split("=")[4].split(";")[0];
-                        String conCosto = respuestaWS.getProperty(i).toString().split("=")[5].split(";")[0];
+                        String sinCosto = respuestaWS.getProperty(i).toString().split("=")[5].split(";")[0];
 
-                        Evento e = new Evento(tema, fecha, turno, codigo, conCosto);
+                        Evento e = new Evento(tema, fecha, turno, codigo, sinCosto);
                         listaEvento.add(e);
                     }
                 } catch (Exception ex) {

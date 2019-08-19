@@ -96,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
                                 final String apynom = sesionUsuario.getString("apynom", "");
                                 final String fecha = sesionUsuario.getString("fecha", "");
                                 final String codigo = sesionUsuario.getString("codigo", "");
-                                final String conCosto = sesionUsuario.getString("conCosto", "");
+                                final String sinCosto = sesionUsuario.getString("sinCosto", "");
 
-                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha, codigo, conCosto);
+                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha, codigo, sinCosto);
                                 auxStrings[0] = s.getValue().toString();
 
                                 switch (auxStrings[0]) {

@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         hasCameraPermission = RuntimePermissionUtil.checkPermissonGranted(this, cameraPerm);
-        currentLayout = findViewById(R.id.activity_main);
+
 
         Button restartbtn = findViewById(R.id.btn_restart_activity);
         restartbtn.setOnClickListener(new View.OnClickListener() {
@@ -86,55 +86,67 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onDetected(final String lecturaQR) {
 
+
+
                     new Thread(new Runnable() {
-                        public void run() {
 
-                            qrEader.stop();
-                            try {
-                                SharedPreferences sesionUsuario = getSharedPreferences("PreferenciasUsuario", Context.MODE_PRIVATE);
-                                final String turno = sesionUsuario.getString("turno", "");
-                                final String apynom = sesionUsuario.getString("apynom", "");
-                                final String fecha = sesionUsuario.getString("fecha", "");
-                                final String codigo = sesionUsuario.getString("codigo", "");
-                                final String sinCosto = sesionUsuario.getString("sinCosto", "");
+                                @Override
+                                public void run() {
 
-                                SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha, codigo, sinCosto);
-                                auxStrings[0] = s.getValue().toString();
+                                    qrEader.stop();
+                                    try {
+                                        SharedPreferences sesionUsuario = getSharedPreferences("PreferenciasUsuario", Context.MODE_PRIVATE);
+                                        final String turno = sesionUsuario.getString("turno", "");
+                                        final String apynom = sesionUsuario.getString("apynom", "");
+                                        final String fecha = sesionUsuario.getString("fecha", "");
+                                        final String codigo = sesionUsuario.getString("codigo", "");
+                                        final String sinCosto = sesionUsuario.getString("sinCosto", "");
 
-                                switch (auxStrings[0]) {
-                                    case "S":
-                                        //todo ok
-                                        currentLayout.setBackgroundColor(Color.GREEN);
-                                        break;
-                                    case "NI":
-                                        //no esta inscripto
-                                        currentLayout.setBackgroundColor(Color.CYAN);
-                                        break;
-                                    case "NP":
-                                        //no pago
-                                        currentLayout.setBackgroundColor(Color.MAGENTA);
-                                        break;
-                                    case "YI":
-                                        // ya tiene la asistencia cargada
-                                        currentLayout.setBackgroundColor(Color.WHITE);
-                                        break;
-                                    default:
-                                        // error en la carga de asistencia
-                                        currentLayout.setBackgroundColor(Color.RED);
-                                        break;
+                                        SoapPrimitive s = ConexionWebService.getInstancia().getEscribirAsistencia(lecturaQR, turno, apynom, fecha, codigo, sinCosto);
+                                        auxStrings[0] = s.getValue().toString();
+                                        currentLayout = findViewById(R.id.activity_main);
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                switch (auxStrings[0]) {
+                                                    case "S":
+                                                        //todo ok
+
+                                                        currentLayout.setBackgroundColor(Color.GREEN);
+                                                        break;
+                                                    case "NI":
+                                                        //no esta inscripto
+                                                        currentLayout.setBackgroundColor(Color.CYAN);
+                                                        break;
+                                                    case "NP":
+                                                        //no pago
+                                                        currentLayout.setBackgroundColor(Color.MAGENTA);
+                                                        break;
+                                                    case "YI":
+                                                        // ya tiene la asistencia cargada
+                                                        currentLayout.setBackgroundColor(Color.WHITE);
+                                                        break;
+                                                    default:
+                                                        // error en la carga de asistencia
+                                                        currentLayout.setBackgroundColor(Color.RED);
+                                                        break;
+
+                                                }
+                                            }
+                                        });
+
+
+                                    } catch (Exception ex) {
+
+                                        // qrEader.releaseAndCleanup();
+                                        ex.printStackTrace();
+                                    } finally {
+                                        qrEader.start();
+                                    }
 
                                 }
 
-                            } catch (Exception ex) {
-
-                                currentLayout.setBackgroundColor(Color.YELLOW);
-                                qrEader.releaseAndCleanup();
-                                ex.printStackTrace();
-                            } finally {
-                                qrEader.start();
-                            }
-
-                        }
 
                     }).start();
                 }

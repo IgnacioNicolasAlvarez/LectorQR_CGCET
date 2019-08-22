@@ -57,28 +57,36 @@ public class LoginActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
 
-                for (final Evento evento : listaEvento) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    final RadioButton radioButton = new RadioButton(x);
-                    radioButton.setId(listaEvento.indexOf(evento));
 
-                    radioButton.setText("Evento: " + evento.getTema() +
-                            "\nFecha: " + evento.getFecha() +
-                            "\nTurno: " + evento.getTurno() + "\n");
+                        for (final Evento evento : listaEvento) {
 
-                    radioButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                            final RadioButton radioButton = new RadioButton(x);
+                            radioButton.setId(listaEvento.indexOf(evento));
 
-                            indicePresionado[0] = radioButton.getId();
-                            loginButton.setEnabled(true);
+                            radioButton.setText("Evento: " + evento.getTema() +
+                                    "\nFecha: " + evento.getFecha() +
+                                    "\nTurno: " + evento.getTurno() + "\n");
+
+                            radioButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    indicePresionado[0] = radioButton.getId();
+                                    loginButton.setEnabled(true);
+                                }
+                            });
+                            radioGroup.addView(radioButton);
                         }
-                    });
-                    radioGroup.addView(radioButton);
-                }
+                    }
+                });
             }
-        };
 
+
+        };
         nt.start();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
